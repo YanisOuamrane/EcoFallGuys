@@ -18,24 +18,24 @@ import javax.imageio.ImageIO;
  */
 public class Jeu {
     private BufferedImage decor;
-    private ArrayList<Joueur> ListeJoueur;
+    private Joueur Joueur;
     
     public Jeu(){
-        try {
-        this.decor = ImageIO . read ( getClass () . getResource (" ../ resources / jungle . png "));
+         try {
+        this.decor = ImageIO . read ( getClass () . getResource ("../motor/terrain.jpg"));
                 } catch (IOException ex ) {
             Logger . getLogger ( Jeu . class . getName () ). log ( Level . SEVERE , null , ex );
-            }               
-           this.score = 0;
+            }  
+         this.Joueur=new Joueur("Yanis");
     }
     
     public void rendu (Graphics2D contexte){
             contexte.drawImage ( this . decor , 0, 0, null );
-            contexte.drawString (" Score : " + score , 10 , 20) ;
+            this.Joueur.rendu(contexte);
     }
     
     public void miseAJour(){
-        
+        this.Joueur.miseAJour();
     }
     
     public boolean estTermine(){
