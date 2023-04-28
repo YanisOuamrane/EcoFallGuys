@@ -21,10 +21,13 @@ public class User {
     private String password;
     private boolean iswin;
     private int win_time;
+    private double x;
+    private double y;
+    private String accessoire;
     
-    private String url;
-    private String user;
-    private String pass;
+    private String url="jdbc:mariadb://nemrod.ens2m.fr:3306/2022-2023/s2/vs1_tp1/2022-2023_s2_vs1_tp1_EcoFallGuy";
+    private String user="etudiant";
+    private String pass="YTDTvj9TR3CDYCmP";
     public void setPassword(String password){
         this.password=password;
     }
@@ -32,7 +35,7 @@ public class User {
         return this.win_time;
     }
     
-    public boolean isIn(String name){
+    public boolean isSignIn(String name){
         try {
 
             Connection connexion = DriverManager.getConnection(url, user, pass);
@@ -97,7 +100,7 @@ public class User {
         if(password.length()<=6||password.length()>11){
             return false;
         }
-        if(isIn(name)){
+        if(isSignIn(name)){
             return false;
         }
         
@@ -105,7 +108,7 @@ public class User {
 
             Connection connexion = DriverManager.getConnection(url, user, pass);
 
-            PreparedStatement requete = connexion.prepareStatement("INSERT INTO EFB(id,name,password,win_time) VALUES (0,?,?,?)",Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement requete = connexion.prepareStatement("INSERT INTO EFB(id,name,password,win_time,x,y) VALUES (0,?,?,?,0.0,0.0)",Statement.RETURN_GENERATED_KEYS);
             ResultSet resultat = requete.executeQuery();
             requete.setString(2, name);
             requete.setString(3, password);
@@ -134,14 +137,45 @@ public class User {
             requete.close();
             connexion.close();
         
-        
-        
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    public void setx_y(double x, double y){
+        try {
+
+            Connection connexion = DriverManager.getConnection(url, user, pass);
+            String sql="UPDATE EFB SET x = ?, y = ? WHERE name = "+ this.name;
+            PreparedStatement requete = connexion.prepareStatement(sql);
+            requete.setDouble(1,x);
+            requete.setDouble(2,y);
+            requete.executeUpdate();
+
+            requete.close();
+            connexion.close();
         
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
     }
-    public String getNfromI(int id){
+    
+    public void setAccessoire(String Accessoire){
+        try {
+
+            Connection connexion = DriverManager.getConnection(url, user, pass);
+            String sql="UPDATE EFB SET accessoire = ? WHERE name = "+ this.name;
+            PreparedStatement requete = connexion.prepareStatement(sql);
+            requete.setString(1,Accessoire);
+            requete.executeUpdate();
+            requete.close();
+            connexion.close();
+        
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+    public String getNamefromID(int id){
         try {
 
             Connection connexion = DriverManager.getConnection(url, user, pass);
@@ -163,7 +197,7 @@ public class User {
         }
         return null;
     }
-    public int getWfromI(int id){
+    public int getWintimefromID(int id){
         try {
 
             Connection connexion = DriverManager.getConnection(url, user, pass);
