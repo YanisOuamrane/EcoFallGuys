@@ -65,7 +65,7 @@ public class User {
         }
         return false;
     }
-    public boolean SignIn(String name, String password){
+    public boolean SignIn(String name, String password){//interface de connextion requis
         try {
 
             Connection connexion = DriverManager.getConnection(url, user, pass);
@@ -93,7 +93,7 @@ public class User {
         return false;
 
     }
-    public boolean Register(String name,String password){
+    public boolean Register(String name,String password){//interface d'inscription requis
         if(name.length()>=10){
             return false;
         }
@@ -131,7 +131,7 @@ public class User {
         return false;
 
     }
-    public void setWin(){
+    public void setWin(){//définissez le gagnant seul
         try {
 
             Connection connexion = DriverManager.getConnection(url, user, pass);
@@ -150,7 +150,7 @@ public class User {
         }
     }
     
-    public void setx_y(double x, double y){
+    public void setx_y(double x, double y){//emplacement synchrone en temps réel
         try {
 
             Connection connexion = DriverManager.getConnection(url, user, pass);
@@ -169,13 +169,29 @@ public class User {
         }
     }
     
-    public void setAccessoire(String Accessoire){
+    public void setAccessoire(String Accessoire){//un seul accessoire peut etre utilisé à la fois
         try {
 
             Connection connexion = DriverManager.getConnection(url, user, pass);
             String sql="UPDATE EFB SET accessoire = ? WHERE name = ?";
             PreparedStatement requete = connexion.prepareStatement(sql);
             requete.setString(1,Accessoire);
+            requete.setString(2, this.name);
+            requete.executeUpdate();
+            requete.close();
+            connexion.close();
+        
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+    public void setAccessoireExable(){//perdre de accessoire après une heure déterminée
+        try {
+
+            Connection connexion = DriverManager.getConnection(url, user, pass);
+            String sql="UPDATE EFB SET accessoire = ? WHERE name = ?";
+            PreparedStatement requete = connexion.prepareStatement(sql);
+            requete.setString(1," ");
             requete.setString(2, this.name);
             requete.executeUpdate();
             requete.close();
@@ -207,7 +223,7 @@ public class User {
         }
         return null;
     }
-    public int getWintimefromID(int id){
+    public int getWintimefromID(int id){//enregistrez le nombre de victoires
         try {
 
             Connection connexion = DriverManager.getConnection(url, user, pass);
