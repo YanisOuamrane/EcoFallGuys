@@ -23,6 +23,7 @@ public class UserTest {
         user.getWintimefromID(1);
         //user.setWin();
         user.setx_y(1.5587874, 54.654);
+        user.setSpeedx_y(0.5265, 0.55447);
         user.setAccessoire("fly");
     }
     

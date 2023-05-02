@@ -24,6 +24,8 @@ public class User {
     private int win_time;
     private double x;
     private double y;
+    private double speed_x;
+    private double speed_y;
     private int COUNT;
     private String accessoire;
     
@@ -121,7 +123,7 @@ public class User {
 
             Connection connexion = DriverManager.getConnection(url, user, pass);
             
-            PreparedStatement requete = connexion.prepareStatement("INSERT INTO EFB(id,name,password,iswin,win_time,x,y,accessoire,color) VALUES (?,?,?,0,0,0,0,?,?)",Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement requete = connexion.prepareStatement("INSERT INTO EFB(id,name,password,iswin,win_time,x,y,accessoire,color,speed_x,speed_y) VALUES (?,?,?,0,0,0,0,?,?,0,0)",Statement.RETURN_GENERATED_KEYS);
             getCOUNT();
             requete.setInt(1,COUNT+1 );
             requete.setString(2, name);
@@ -176,7 +178,24 @@ public class User {
             ex.printStackTrace();
         }
     }
-    
+    public void setSpeedx_y(double speed_x, double speed_y){
+        try {
+
+            Connection connexion = DriverManager.getConnection(url, user, pass);
+            String sql="UPDATE EFB SET speed_x = ?, speed_y = ? WHERE name = ?";
+            PreparedStatement requete = connexion.prepareStatement(sql);
+            requete.setDouble(1,speed_x);
+            requete.setDouble(2,speed_y);
+            requete.setString(3, this.name);
+            requete.executeUpdate();
+
+            requete.close();
+            connexion.close();
+        
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
     public void setAccessoire(String Accessoire){//un seul accessoire peut etre utilisé à la fois
         try {
 
