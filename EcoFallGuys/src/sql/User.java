@@ -19,6 +19,7 @@ public class User {
     private String name;
     private int id;
     private String password;
+    private String color;
     private boolean iswin;
     private int win_time;
     private double x;
@@ -46,13 +47,14 @@ public class User {
 
             Connection connexion = DriverManager.getConnection(url, user, pass);
 
-            PreparedStatement requete = connexion.prepareStatement("SELECT id, name, password, iswin FROM EFB;");
+            PreparedStatement requete = connexion.prepareStatement("SELECT id, name, password, win_time FROM EFB;");
             ResultSet resultat = requete.executeQuery();
             while (resultat.next()) {
                 this.name = resultat.getString("name");
                 this.id = resultat.getInt("id");
                 this.password = resultat.getString("password");
-                this.iswin=resultat.getBoolean("iswin");
+                this.win_time=resultat.getInt("win_time");
+                
                 if(this.name.equals(name)){
                     return true;
                 }     
@@ -65,13 +67,13 @@ public class User {
         }
         return false;
     }
-    public boolean SignIn(String name, String password){//interface de connextion requis
+    public boolean SignIn(String name, String password, String color){//interface de connextion requis
         try {
 
             Connection connexion = DriverManager.getConnection(url, user, pass);
 
-            PreparedStatement requete = connexion.prepareStatement("SELECT id, name, password, win_time FROM EFB;");
-            ResultSet resultat = requete.executeQuery();
+            PreparedStatement requete01 = connexion.prepareStatement("SELECT id, name, password, iswin, win_time FROM EFB;");
+            ResultSet resultat = requete01.executeQuery();
             while (resultat.next()) {
                 this.name = resultat.getString("name");
                 this.id = resultat.getInt("id");
@@ -79,12 +81,17 @@ public class User {
                 this.iswin=false;
                 this.win_time=resultat.getInt("win_time");
                 if((this.name.equals(name))&&(this.password.equals(password))){
+                    PreparedStatement requete02 = connexion.prepareStatement("UPDATE EFB SET color = ? WHERE name = ?");
+                    requete02.setString(1, color);
+                    requete02.setString(2, name);
+                    requete02.executeUpdate();
+                    requete02.close();
                     return true;
                 }
                     
             }
 
-            requete.close();
+            requete01.close();
             connexion.close();
 
         } catch (SQLException ex) {
@@ -114,12 +121,13 @@ public class User {
 
             Connection connexion = DriverManager.getConnection(url, user, pass);
             
-            PreparedStatement requete = connexion.prepareStatement("INSERT INTO EFB(id,name,password,iswin,win_time,x,y,accessoire) VALUES (?,?,?,0,0,0,0,?)",Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement requete = connexion.prepareStatement("INSERT INTO EFB(id,name,password,iswin,win_time,x,y,accessoire,color) VALUES (?,?,?,0,0,0,0,?,?)",Statement.RETURN_GENERATED_KEYS);
             getCOUNT();
             requete.setInt(1,COUNT+1 );
             requete.setString(2, name);
             requete.setString(3, password);
             requete.setString(4, " ");
+            requete.setString(5, " ");
             requete.executeUpdate();
             requete.close();
             connexion.close();

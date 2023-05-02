@@ -8,9 +8,10 @@ package motor;
  *
  * @author xlai
  */
-public class EcoFallGuys {
+public class UserTest {
     private static String name="apple";
     private static String password="123456ABC";
+    private static String color="red";
     /**
      * @param args the command line arguments
      */
@@ -18,7 +19,7 @@ public class EcoFallGuys {
         // TODO code application logic here
         sql.User user= new sql.User();
         user.Register(name,password);
-        user.SignIn(name, password);
+        user.SignIn(name, password,color);
         user.getWintimefromID(1);
         //user.setWin();
         user.setx_y(1.5587874, 54.654);
