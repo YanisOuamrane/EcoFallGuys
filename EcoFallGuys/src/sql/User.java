@@ -23,9 +23,10 @@ public class User {
     private int win_time;
     private double x;
     private double y;
+    private int COUNT;
     private String accessoire;
     
-    private String url="jdbc:mariadb://nemrod.ens2m.fr:3306/2022-2023/s2/vs1_tp1/2022-2023_s2_vs1_tp1_EcoFallGuy";
+    private String url="jdbc:mysql://nemrod.ens2m.fr:3306/2022-2023_s2_vs1_tp1_EcoFallGuy?serverTimezone=UTC";
     private String user="etudiant";
     private String pass="YTDTvj9TR3CDYCmP";
     public void setPassword(String password){
@@ -34,7 +35,12 @@ public class User {
     public int getWin_time(){
         return this.win_time;
     }
-    
+    public void setName(String name){
+        this.name=name;
+    }
+    public int getCOUNT(){
+        return this.COUNT;
+    }
     public boolean isSignIn(String name){
         try {
 
@@ -107,12 +113,13 @@ public class User {
         try {
 
             Connection connexion = DriverManager.getConnection(url, user, pass);
-
-            PreparedStatement requete = connexion.prepareStatement("INSERT INTO EFB(id,name,password,win_time,x,y) VALUES (0,?,?,?,0.0,0.0)",Statement.RETURN_GENERATED_KEYS);
-            ResultSet resultat = requete.executeQuery();
+            
+            PreparedStatement requete = connexion.prepareStatement("INSERT INTO EFB(id,name,password,iswin,win_time,x,y,accessoire) VALUES (?,?,?,0,0,0,0,?)",Statement.RETURN_GENERATED_KEYS);
+            getCOUNT();
+            requete.setInt(1,COUNT+1 );
             requete.setString(2, name);
             requete.setString(3, password);
-            requete.setInt(4, 0);
+            requete.setString(4, " ");
             requete.executeUpdate();
             requete.close();
             connexion.close();
@@ -128,10 +135,11 @@ public class User {
         try {
 
             Connection connexion = DriverManager.getConnection(url, user, pass);
-            String sql="UPDATE EFB SET iswin = ?, win_time = ? WHERE name = "+ this.name;
+            String sql="UPDATE EFB SET iswin = ?, win_time = ? WHERE name = ?";
             PreparedStatement requete = connexion.prepareStatement(sql);
             requete.setBoolean(1,true);
             requete.setInt(2,getWin_time()+1);
+            requete.setString(3, this.name);
             requete.executeUpdate();
 
             requete.close();
@@ -146,10 +154,11 @@ public class User {
         try {
 
             Connection connexion = DriverManager.getConnection(url, user, pass);
-            String sql="UPDATE EFB SET x = ?, y = ? WHERE name = "+ this.name;
+            String sql="UPDATE EFB SET x = ?, y = ? WHERE name = ?";
             PreparedStatement requete = connexion.prepareStatement(sql);
             requete.setDouble(1,x);
             requete.setDouble(2,y);
+            requete.setString(3, this.name);
             requete.executeUpdate();
 
             requete.close();
@@ -164,9 +173,10 @@ public class User {
         try {
 
             Connection connexion = DriverManager.getConnection(url, user, pass);
-            String sql="UPDATE EFB SET accessoire = ? WHERE name = "+ this.name;
+            String sql="UPDATE EFB SET accessoire = ? WHERE name = ?";
             PreparedStatement requete = connexion.prepareStatement(sql);
             requete.setString(1,Accessoire);
+            requete.setString(2, this.name);
             requete.executeUpdate();
             requete.close();
             connexion.close();
@@ -202,13 +212,16 @@ public class User {
 
             Connection connexion = DriverManager.getConnection(url, user, pass);
 
-            PreparedStatement requete = connexion.prepareStatement("SELECT id, name, password,iswin, win_time FROM EFB;");
+            PreparedStatement requete = connexion.prepareStatement("SELECT  id,  win_time FROM EFB;");
             ResultSet resultat = requete.executeQuery();
             while (resultat.next()) {
-                int temp_id = resultat.getInt("id");
+                int temp_id= resultat.getInt("id");
                 int temp_win_time = resultat.getInt("win_time");
-                if (id == temp_id)
+                if (id == temp_id){
+                    this.win_time=temp_win_time;
                     return temp_win_time;
+                }
+                   
             }
 
             requete.close();
@@ -219,4 +232,5 @@ public class User {
         }
         return -1;
     }
+   
 }
