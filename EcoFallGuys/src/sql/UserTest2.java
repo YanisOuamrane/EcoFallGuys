@@ -30,7 +30,10 @@ public class UserTest2 {
         user.setx_y(1.5587874, 54.654);
         user.setSpeedx_y(0.5265, 0.55447);
         user.setAccessoire("fly");
-        
+        user.getx_y();
+        for(int i=0;i<3;i++){
+            System.out.print(user.aux[i]);
+         }   
     }
     
 

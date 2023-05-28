@@ -11,6 +11,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+
+
+
 /**
  *
  * @author xlai
@@ -21,6 +24,7 @@ public class User {
     private String password;
     private String color;
     private boolean iswin;
+    private boolean issignin;
     private int win_time;
     private double x;
     private double y;
@@ -32,6 +36,14 @@ public class User {
     private String url="jdbc:mysql://nemrod.ens2m.fr:3306/2022-2023_s2_vs1_tp1_EcoFallGuy?serverTimezone=UTC";
     private String user="etudiant";
     private String pass="YTDTvj9TR3CDYCmP";
+    
+    public double[] aux= new double [3];
+    public double[] auy= new double [3];
+    public String[] aun= new String [3];
+    public String[] aucolor=new String [3];
+    public double[] auspeed_x= new double [3];
+    public double[] auspeed_y= new double [3];
+    
     public void setPassword(String password){
         this.password=password;
     }
@@ -41,10 +53,8 @@ public class User {
     public void setName(String name){
         this.name=name;
     }
-    public int getCOUNT(){
-        return this.COUNT;
-    }
-    public boolean isSignIn(String name){
+    
+    public boolean isRed(String name){
         try {
 
             Connection connexion = DriverManager.getConnection(url, user, pass);
@@ -83,8 +93,9 @@ public class User {
                 this.iswin=false;
                 this.win_time=resultat.getInt("win_time");
                 if((this.name.equals(name))&&(this.password.equals(password))){
-                    PreparedStatement requete02 = connexion.prepareStatement("UPDATE EFB SET color = ? WHERE name = ?");
+                    PreparedStatement requete02 = connexion.prepareStatement("UPDATE EFB SET color = ?, issignin = 1 WHERE name = ?");
                     requete02.setString(1, color);
+                    
                     requete02.setString(2, name);
                     requete02.executeUpdate();
                     requete02.close();
@@ -115,7 +126,7 @@ public class User {
         if(password.length()<=6||password.length()>11){
             return false;
         }
-        if(isSignIn(name)){
+        if(isRed(name)){
             return false;
         }
         
@@ -123,13 +134,13 @@ public class User {
 
             Connection connexion = DriverManager.getConnection(url, user, pass);
             
-            PreparedStatement requete = connexion.prepareStatement("INSERT INTO EFB(id,name,password,iswin,win_time,x,y,accessoire,color,speed_x,speed_y) VALUES (?,?,?,0,0,0,0,?,?,0,0)",Statement.RETURN_GENERATED_KEYS);
-            getCOUNT();
-            requete.setInt(1,COUNT+1 );
-            requete.setString(2, name);
-            requete.setString(3, password);
+            PreparedStatement requete = connexion.prepareStatement("INSERT INTO EFB(name,password,iswin,win_time,x,y,accessoire,color,speed_x,speed_y,issignin) VALUES (?,?,0,0,0,0,?,?,0,0,0)",Statement.RETURN_GENERATED_KEYS);
+            
+           // requete.setInt(1,getCOUNT()+1 );
+            requete.setString(1, name);
+            requete.setString(2, password);
+            requete.setString(3, " ");
             requete.setString(4, " ");
-            requete.setString(5, " ");
             requete.executeUpdate();
             requete.close();
             connexion.close();
@@ -141,7 +152,7 @@ public class User {
         return false;
 
     }
-    public void setWin(){//définissez le gagnant seul
+    public void setWin(){//d茅finissez le gagnant seul
         try {
 
             Connection connexion = DriverManager.getConnection(url, user, pass);
@@ -160,7 +171,7 @@ public class User {
         }
     }
     
-    public void setx_y(double x, double y){//emplacement synchrone en temps réel
+    public void setx_y(double x, double y){//emplacement synchrone en temps r茅el
         try {
 
             Connection connexion = DriverManager.getConnection(url, user, pass);
@@ -178,6 +189,32 @@ public class User {
             ex.printStackTrace();
         }
     }
+    
+    public void getx_y() {
+    	int a=0;
+    	 try {
+
+             Connection connexion = DriverManager.getConnection(url, user, pass);
+             String sql="SELECT  name, x, y  FROM EFB WHERE issignin=1 AND name!= ?";
+             PreparedStatement requete = connexion.prepareStatement(sql);
+             requete.setString(1, this.name);
+             ResultSet resultat = requete.executeQuery();
+             
+             while (resultat.next()) {
+                aun[a]=resultat.getString("name");
+                aux[a]=resultat.getDouble("x");
+                auy[a]=resultat.getDouble("y");
+                a++;     
+             }
+             requete.close();
+             connexion.close();
+
+         } catch (SQLException ex) {
+             ex.printStackTrace();
+         }
+        
+     }
+    
     public void setSpeedx_y(double speed_x, double speed_y){
         try {
 
@@ -196,7 +233,57 @@ public class User {
             ex.printStackTrace();
         }
     }
-    public void setAccessoire(String Accessoire){//un seul accessoire peut etre utilisé à la fois
+    
+    public void getSpeedx_y() {
+    	int a=0;
+    	 try {
+
+             Connection connexion = DriverManager.getConnection(url, user, pass);
+             String sql="SELECT  name, speed_x, speed_y  FROM EFB WHERE issignin=1 AND name!= ?";
+             PreparedStatement requete = connexion.prepareStatement(sql);
+             requete.setString(1, this.name);
+             ResultSet resultat = requete.executeQuery();
+             
+             while (resultat.next()) {
+                aun[a]=resultat.getString("name");
+                auspeed_x[a]=resultat.getDouble("speed_x");
+                auspeed_y[a]=resultat.getDouble("speed_y");
+                a++;     
+             }
+             requete.close();
+             connexion.close();
+
+         } catch (SQLException ex) {
+             ex.printStackTrace();
+         }
+        
+     }
+    
+    
+    public void getcolor() {
+    	int a=0;
+    	 try {
+
+             Connection connexion = DriverManager.getConnection(url, user, pass);
+             String sql="SELECT  name, color  FROM EFB WHERE issignin=1 AND name!= ?";
+             PreparedStatement requete = connexion.prepareStatement(sql);
+             requete.setString(1, this.name);
+             ResultSet resultat = requete.executeQuery();
+             
+             while (resultat.next()) {
+                aun[a]=resultat.getString("name");
+                aucolor[a]=resultat.getString("color");
+                a++;     
+             }
+             requete.close();
+             connexion.close();
+
+         } catch (SQLException ex) {
+             ex.printStackTrace();
+         }
+        
+     }
+    public void setAccessoire(String Accessoire){//un seul accessoire peut etre utilis茅 脿 la fois
         try {
 
             Connection connexion = DriverManager.getConnection(url, user, pass);
@@ -212,7 +299,7 @@ public class User {
             ex.printStackTrace();
         }
     }
-    public void setAccessoireExable(){//perdre de accessoire après une heure déterminée
+    public void setAccessoireExable(){//perdre de accessoire apr猫s une heure d茅termin茅e
         try {
 
             Connection connexion = DriverManager.getConnection(url, user, pass);

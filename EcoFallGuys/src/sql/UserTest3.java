@@ -17,6 +17,7 @@ public class UserTest3 {
     public static void main(String[] args) {
         // TODO code application logic here
         sql.User user= new sql.User();
+        
         user.Register(name,password);
         user.SignIn(name, password,color);
         user.getWintimefromID(1);
